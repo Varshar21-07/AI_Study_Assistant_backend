@@ -8,6 +8,36 @@ const generateToken = (id) => {
   });
 };
 
+// Validate email format and domain
+const validateEmail = (email) => {
+  // Basic email format validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return { valid: false, message: 'Invalid email format' };
+  }
+
+  // Extract domain
+  const domain = email.split('@')[1].toLowerCase();
+  
+  // List of common valid domains (you can expand this)
+  const validDomains = [
+    'gmail.com', 'yahoo.com', 'outlook.com', 'hotmail.com',
+    'icloud.com', 'protonmail.com', 'aol.com', 'zoho.com',
+    'mail.com', 'yandex.com', 'gmx.com', 'tutanota.com'
+  ];
+
+  // Check if domain ends with common TLDs
+  const validTLDs = ['.com', '.org', '.net', '.edu', '.gov', '.co', '.io', '.in', '.uk', '.ca', '.au'];
+  const hasValidTLD = validTLDs.some(tld => domain.endsWith(tld));
+
+  // Check if it's a known valid domain or has a valid TLD
+  if (validDomains.includes(domain) || hasValidTLD) {
+    return { valid: true };
+  }
+
+  return { valid: false, message: 'Please use a valid email domain' };
+};
+
 // Register User
 const register = async (req, res) => {
   try {
@@ -18,6 +48,15 @@ const register = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: 'Please provide all required fields'
+      });
+    }
+
+    // Validate email format and domain
+    const emailValidation = validateEmail(email);
+    if (!emailValidation.valid) {
+      return res.status(400).json({
+        success: false,
+        message: emailValidation.message
       });
     }
 

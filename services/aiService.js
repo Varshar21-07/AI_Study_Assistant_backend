@@ -211,18 +211,31 @@ const generateMockResponse = (content, mode, isDirectQuestion = false) => {
   };
 };
 
-// Generate AI response using OpenAI
+// Generate AI response using OpenAI with 7 W's and How framework
 const generateOpenAIResponse = async (content, mode, isDirectQuestion = false) => {
   try {
     const isMathMode = mode === 'math';
     
     let prompt = '';
-    if (isDirectQuestion) {
-      // Handle direct questions/problems
+    
+    // Check if it's a "what is" type question
+    const isWhatQuestion = /^(what|who|why|when|where|which|whom|how)\s+(is|are|was|were|does|do|did)/i.test(content);
+    if (isDirectQuestion && isWhatQuestion) {
+      // Handle "what is" type questions with 7 W's and How framework
       prompt = `You are a helpful study assistant. The user has asked: "${content}"
 
-Please solve this problem or answer this question, then generate educational content:
-1. A brief explanation/solution in exactly 3 bullet points
+Please answer using the 7 W's and How framework. Provide 8 comprehensive points:
+1. WHAT: What is it? (Definition and core concept)
+2. WHY: Why is it important? (Significance and relevance)
+3. WHEN: When is it used? (Time context and applications)
+4. WHERE: Where is it applied? (Contexts and domains)
+5. WHO: Who uses it? (Target audience and stakeholders)
+6. WHICH: Which types exist? (Classifications and variations)
+7. WHOM: Whom does it affect? (Impact and beneficiaries)
+8. HOW: How does it work? (Process and mechanism)
+
+Then generate educational content:
+1. A comprehensive summary covering all 8 aspects (7 W's + How)
 2. Three multiple-choice quiz questions related to this problem with 4 options each and the correct answer index (0-3)
 3. ${isMathMode ? 'A detailed step-by-step solution showing how to solve the problem (as an array of strings)' : ''}
 4. A study tip for mastering this type of problem
@@ -363,19 +376,32 @@ Format the response as JSON with this structure:
   }
 };
 
-// Generate AI response using Gemini
+// Generate AI response using Gemini with 7 W's and How framework
 const generateGeminiResponse = async (content, mode, isDirectQuestion = false) => {
   try {
     const isMathMode = mode === 'math';
     const model = geminiClient.getGenerativeModel({ model: 'gemini-pro' });
     
+    // Check if it's a "what is" type question
+    const isWhatQuestion = /^(what|who|why|when|where|which|whom|how)\s+(is|are|was|were|does|do|did)/i.test(content);
+    
     let prompt = '';
-    if (isDirectQuestion) {
-      // Handle direct questions/problems
+    if (isDirectQuestion && isWhatQuestion) {
+      // Handle "what is" type questions with 7 W's and How framework
       prompt = `You are a helpful study assistant. The user has asked: "${content}"
 
-Please solve this problem or answer this question, then generate educational content:
-1. A brief explanation/solution in exactly 3 bullet points
+Please answer using the 7 W's and How framework. Provide 8 comprehensive points:
+1. WHAT: What is it? (Definition and core concept)
+2. WHY: Why is it important? (Significance and relevance)
+3. WHEN: When is it used? (Time context and applications)
+4. WHERE: Where is it applied? (Contexts and domains)
+5. WHO: Who uses it? (Target audience and stakeholders)
+6. WHICH: Which types exist? (Classifications and variations)
+7. WHOM: Whom does it affect? (Impact and beneficiaries)
+8. HOW: How does it work? (Process and mechanism)
+
+Then generate educational content:
+1. A comprehensive summary covering all 8 aspects (7 W's + How)
 2. Three multiple-choice quiz questions related to this problem with 4 options each and the correct answer index (0-3)
 3. ${isMathMode ? 'A detailed step-by-step solution showing how to solve the problem (as an array of strings)' : ''}
 4. A study tip for mastering this type of problem
